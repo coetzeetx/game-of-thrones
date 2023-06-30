@@ -1,8 +1,5 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext} from 'react';
 import { HouseLink, HousesListWrapper } from './HousesList.styled';
-import axios from 'axios';
-
-import { House } from '../models/House';
 import { HouseContext } from '../contexts/HouseContext';
 
 interface HousesListProps { }
