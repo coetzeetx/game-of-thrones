@@ -1,30 +1,28 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { HouseLink, HousesListWrapper } from './HousesList.styled';
 import axios from 'axios';
 
-import {House} from '../models/House';
+import { House } from '../models/House';
+import { HouseContext } from '../contexts/HouseContext';
 
 interface HousesListProps { }
 
 const HousesList: FC<HousesListProps> = () => {
-   const [houses, setHouses] = useState<House[]>([]);
+   const houses = useContext(HouseContext);
 
-   useEffect(() => {
-      axios.get('https://www.anapioficeandfire.com/api/houses')
-        .then(response => {
-          const houses = response.data.map((house: any) => new House(house.name, house.region, house.coatOfArms, house.words));
-          setHouses(houses);
-        });
-    }, []);
 
    return (
-    <HousesListWrapper>
-      {houses.map(house => (
-        <HouseLink key={house.name} to={`/house/${house.name}`}>
-          {house.name}
-        </HouseLink>
-      ))}
-    </HousesListWrapper>
+      <HousesListWrapper>
+         {houses.map(house => {
+            const id = house.url.split('/').pop();
+            //convert spaces to '-' and converts to lowercase. makes the url more user-friendly
+            const name = house.name.replace(/\s+/g, '-').toLowerCase();
+            return (
+               <HouseLink key={house.url} to={`/house/${id}/${name}`}>
+                  {house.name}
+               </HouseLink>)
+         })}
+      </HousesListWrapper>
    )
 };
 

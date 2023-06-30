@@ -4,5 +4,6 @@ export class House {
       public region: string,
       public coatOfArms: string,
       public words: string,
+      public url: string
     ) {}
   }
