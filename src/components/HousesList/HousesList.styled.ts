@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 export const HousesListWrapper = styled.div`
-font-family: 'Roboto', sans-serif; // Apply Roboto font
+font-family: 'Roboto', sans-serif;
 `;
 
 export const HousesListContainer = styled.div`
@@ -14,7 +14,7 @@ background-color: #f5f5f5;
 border-radius: 4px; 
 width: 80%;
 margin: 20px auto;
-font-family: 'Roboto', sans-serif; // Apply Roboto font
+font-family: 'Roboto', sans-serif;
 box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
 `;
 
@@ -27,7 +27,7 @@ background-color: #f5f5f5;
 border-radius: 4px; 
 width: 80%;
 margin: 10px auto;
-font-family: 'Roboto', sans-serif; // Apply Roboto font
+font-family: 'Roboto', sans-serif;
 `;
 
 export const HouseLink = styled(Link)`
@@ -67,22 +67,22 @@ export const PageNumber = styled.button`
 `;
 
 export const PaginationButton = styled.button`
-background-color: #3f51b5; // Material UI primary color
+background-color: #3f51b5;
 color: #fff; // White text
 border: none;
 padding: 10px 20px;
 border-radius: 4px;
 cursor: pointer;
-transition: background-color 0.3s ease, box-shadow 0.3s ease; // Add transition to box-shadow
+transition: background-color 0.3s ease, box-shadow 0.3s ease; 
 margin-left: 1px;
 
 &:hover {
-  background-color: #283593; // Material UI primary dark color
-  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12); // Material UI box-shadow for elevation 3
+  background-color: #283593; 
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12); 
 }
 
 &:disabled {
-  background-color: #ccc; // Grey color
+  background-color: #ccc; 
   cursor: not-allowed;
 }
 `;
@@ -122,7 +122,7 @@ export const HouseName = styled.h1`
 
 export const Heading = styled.h1`
 font-size: 2em;
-color: #3f51b5; // Material UI primary color
+color: #3f51b5; 
 margin-bottom: 20px;
 text-align: left;
 width:100%;

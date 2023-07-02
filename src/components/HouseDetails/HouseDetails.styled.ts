@@ -5,14 +5,14 @@ display: flex;
 flex-direction: column;
 align-items: center;
 padding: 20px;
-background-color: #f5f5f5; // Material UI paper color
-border-radius: 4px; // Material UI border radius
+background-color: #f5f5f5; 
+border-radius: 4px; 
 width: 80%;
 margin: 20px auto;
 `;
 
 export const HouseName = styled.h1`
-  color: #3f51b5; // Material UI primary color
+  color: #3f51b5; 
   margin-bottom: 20px;
 `;
 
