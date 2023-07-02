@@ -4,7 +4,6 @@ import HousesList from './components/HousesList/HousesList';
 import { House } from './components/models/House';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { HouseContext } from './components/contexts/HouseContext';
 import HouseDetails from './components/HouseDetails/HouseDetails';
 
 function App() {

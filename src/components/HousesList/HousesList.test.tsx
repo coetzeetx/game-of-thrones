@@ -4,7 +4,6 @@ import '@testing-library/jest-dom/extend-expect';
 import HousesList from './HousesList';
 import { House } from '../models/House';
 import { MemoryRouter, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { HouseContext } from '../contexts/HouseContext';
 
 describe('render and check house names', () => {
   test('it should mount', () => {
@@ -15,9 +14,7 @@ describe('render and check house names', () => {
   
     render(
       <Router>
-        <HouseContext.Provider value={houses}>
           {/* <HousesList /> */}
-        </HouseContext.Provider>
       </Router>
     );
   
@@ -30,9 +27,7 @@ describe('render and check house names', () => {
   test('it should handle no houses', () => {
     render(
       <Router>
-        <HouseContext.Provider value={[]}>
           {/* <HousesList /> */}
-        </HouseContext.Provider>
       </Router>
     );
   

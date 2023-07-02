@@ -1,9 +1,7 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
-import { HouseDetailsWrapper } from './HouseDetails.styled';
+import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { House } from '../models/House';
 import axios from 'axios';
-import { HouseContext } from '../contexts/HouseContext';
 
 interface RouteParams {
    [id: string]: string;
@@ -19,7 +17,6 @@ const HouseDetails: FC<HousesDetailsProps> = ({ houses }) => {
 
    useEffect(() => {
       const houseFound = houses.find(house => house.url.split('/').pop() === id)
-      console.log(houseFound)
       if (houseFound) {
          axios.get(houseFound.url)
             .then(response => {
@@ -28,7 +25,7 @@ const HouseDetails: FC<HousesDetailsProps> = ({ houses }) => {
                setHouse(house);
             });
       }
-   }, [houses]);
+   }, [houses, id]);
 
 
    return (

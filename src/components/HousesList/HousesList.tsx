@@ -1,6 +1,5 @@
-import { FC, useContext} from 'react';
+import { FC } from 'react';
 import { HouseLink, HousesListWrapper } from './HousesList.styled';
-import { HouseContext } from '../contexts/HouseContext';
 import { House } from '../models/House';
 
 interface HousesListProps { 
@@ -16,7 +15,7 @@ const HousesList: FC<HousesListProps> = ({ houses}) => {
             //convert spaces to '-' and converts to lowercase. makes the url more user-friendly
             const name = house.name.replace(/\s+/g, '-').toLowerCase();
             return (
-               <HouseLink to={`/house/${id}/${name}`}>
+               <HouseLink key={id} to={`/house/${id}/${name}`}>
                   {house.name}
                </HouseLink>)
          })}
