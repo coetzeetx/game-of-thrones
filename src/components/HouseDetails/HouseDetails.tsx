@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { House } from '../models/House';
 import axios from 'axios';
+import { HouseDetail, HouseDetailsWrapper, HouseName } from './HouseDetails.styled';
 
 interface RouteParams {
    [id: string]: string;
@@ -20,6 +21,7 @@ const HouseDetails: FC<HousesDetailsProps> = ({ houses }) => {
       if (houseFound) {
          axios.get(houseFound.url)
             .then(response => {
+               console.log(response.data)
                const houseData = response.data;
                const house = new House(houseData.name, houseData.region, houseData.coatOfArms, houseData.words, houseData.url);
                setHouse(house);
@@ -29,18 +31,19 @@ const HouseDetails: FC<HousesDetailsProps> = ({ houses }) => {
 
 
    return (
-      <div>
+      <HouseDetailsWrapper>
          {house ? (
             <>
-               <h1>{house.name}</h1>
-               <p>{house.region}</p>
-               <p>{house.coatOfArms}</p>
-               <p>{house.words}</p>
+               <HouseName>{house.name}</HouseName>
+               <HouseDetail>{house.region}</HouseDetail>
+               <HouseDetail>{house.coatOfArms}</HouseDetail>
+               <HouseDetail>{house.words}</HouseDetail>
             </>
          ) : (
             <div>Loading...</div>
          )}
-      </div>);
+      </HouseDetailsWrapper>
+      );
 };
 
 export default HouseDetails;
