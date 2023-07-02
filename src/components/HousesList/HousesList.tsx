@@ -1,12 +1,13 @@
 import { FC, useContext} from 'react';
 import { HouseLink, HousesListWrapper } from './HousesList.styled';
 import { HouseContext } from '../contexts/HouseContext';
+import { House } from '../models/House';
 
-interface HousesListProps { }
+interface HousesListProps { 
+   houses: House[];
+}
 
-const HousesList: FC<HousesListProps> = () => {
-   const houses = useContext(HouseContext);
-
+const HousesList: FC<HousesListProps> = ({ houses}) => {
 
    return (
       <HousesListWrapper>
@@ -15,7 +16,7 @@ const HousesList: FC<HousesListProps> = () => {
             //convert spaces to '-' and converts to lowercase. makes the url more user-friendly
             const name = house.name.replace(/\s+/g, '-').toLowerCase();
             return (
-               <HouseLink key={house.url} to={`/house/${id}/${name}`}>
+               <HouseLink to={`/house/${id}/${name}`}>
                   {house.name}
                </HouseLink>)
          })}

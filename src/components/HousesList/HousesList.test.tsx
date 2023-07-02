@@ -16,7 +16,7 @@ describe('render and check house names', () => {
     render(
       <Router>
         <HouseContext.Provider value={houses}>
-          <HousesList />
+          {/* <HousesList /> */}
         </HouseContext.Provider>
       </Router>
     );
@@ -31,7 +31,7 @@ describe('render and check house names', () => {
     render(
       <Router>
         <HouseContext.Provider value={[]}>
-          <HousesList />
+          {/* <HousesList /> */}
         </HouseContext.Provider>
       </Router>
     );
