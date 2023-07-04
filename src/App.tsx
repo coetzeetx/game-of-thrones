@@ -1,10 +1,20 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { CssBaseline } from '@mui/material';
+import { Box } from '@mui/system';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import HousesList from './components/HousesList/HousesList';
 import { House } from './components/models/House';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import HouseDetails from './components/HouseDetails/HouseDetails';
 import styled from 'styled-components';
+
+import Sidebar from './components/Sidebar/Sidebar';
+import Houses from './components/Houses/Houses';
+import Characters from './components/Characters/Characters';
+import Books from './components/Books/Books';
+import Map from './components/Map/Map';
+
+const theme = createTheme();
 
 const StyledApp = styled.div`
   display: flex;
@@ -33,81 +43,30 @@ const NavTitleLink = styled(Link)`
 `;
 
 function App() {
-  const [houses, setHouses] = useState<House[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [lastPage, setLastPage] = useState(1);
+  const [open, setOpen] = useState(true);
 
-  useEffect(() => {
-    axios.get(`https://www.anapioficeandfire.com/api/houses?page=${currentPage}&pageSize=${itemsPerPage}`)
-      .then(response => {
-        const houses = response.data.map((house: any) => new House(house.name, house.region, house.coatOfArms, house.words, house.url));
-        setHouses(houses);
-
-        const linkHeader = response.headers.link;
-        if (linkHeader) {
-
-          const links = linkHeader.split(',');
-
-          const lastLink = links.find((link: string) => link.includes('rel="last"'));
-
-          if (lastLink) {
-            const lastPageMatch = lastLink.match(/page=(\d+)/);
-            if (lastPageMatch) {
-              setLastPage(parseInt(lastPageMatch[1]));
-            }
-          }
-        }
-      });
-
-
-  }, [currentPage, itemsPerPage]);
-
-  const handleItemsPerPageChange = (newItemsPerPage: number) => {
-    setItemsPerPage(newItemsPerPage);
+  const handleDrawerToggle = () => {
+    setOpen(!open);
   };
 
-  const handleNextPage = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const handleLastPage = () => {
-    setCurrentPage(lastPage);
-  };
-
+  const drawerWidth = '200px';
   return (
-    <Router>
-      <Navbar>
-        <NavTitle>
-          <NavTitleLink to="/">Game of Thrones API</NavTitleLink>
-        </NavTitle>
-      </Navbar>
-      <Routes>
-        <Route path='/' element={
-          <HousesList
-            houses={houses}
-            onItemsPerPageChange={handleItemsPerPageChange}
-            itemsPerPage={itemsPerPage}
-            onHandleNextPage={handleNextPage}
-            onHandlePreviousPage={handlePreviousPage}
-            onHandleFirstPage={handleFirstPage}
-            onHandleLastPage={handleLastPage}
-            currentPage={currentPage}
-            lastPage={lastPage}
-          />} />
-        <Route path="/house/:id/:name" element={<HouseDetails houses={houses} />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Box component="nav" sx={{ width: drawerWidth, flexShrink: 0 }}>
+          <Sidebar open={open} handleDrawerToggle={handleDrawerToggle} />
+        </Box>
+        <Box component="main" sx={{ pl: open ? drawerWidth : '100px' }}>
+          <Switch>
+            <Route path="/map" component={Map} />
+            <Route path="/houses" component={Houses} />
+            <Route path="/characters" component={Characters} />
+            <Route path="/books" component={Books} />
+          </Switch>
+        </Box>
+      </Router>
+    </ThemeProvider>
   );
 }
 
