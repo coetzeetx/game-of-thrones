@@ -1,4 +1,4 @@
-import { MapContainer, ImageOverlay, useMap, useMapEvents  } from 'react-leaflet';
+import { MapContainer, ImageOverlay, useMap, useMapEvents, Polygon  } from 'react-leaflet';
 import L from 'leaflet';
 import { Box, AppBar, Toolbar, Typography, IconButton } from '@mui/material'; 
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -25,6 +25,8 @@ function CustomZoomControl() {
     },
   });
 
+
+
   return (
     <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
       <IconButton color="primary" onClick={() => { map.zoomIn(); }}>
@@ -39,7 +41,11 @@ function CustomZoomControl() {
 
 function Map() {
   const imageUrl = '/assets/known_world.png';
-  const imageBounds: L.LatLngBoundsExpression = [[-400, -400], [400, 400]];// Cover the entire world
+  const imageBounds: L.LatLngBoundsExpression = [[400, -400], [-400, 400]];// Cover the entire world
+  const center: [number, number] = [
+    (imageBounds[0][0] + imageBounds[1][0]) / 2, // average of latitudes
+    (imageBounds[0][1] + imageBounds[1][1]) / 2, // average of longitudes
+  ];
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column',  backgroundColor: '#36454F' }}>
@@ -52,7 +58,7 @@ function Map() {
       </AppBar>
       <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
         <MapContainer 
-          center={[100, -0.09]} 
+          center={center} 
           zoom={1} 
           style={{ height: "100%", width: "100%" }} 
           dragging={true} 
