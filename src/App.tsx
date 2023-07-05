@@ -1,11 +1,8 @@
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { Box } from '@mui/system';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import HousesList from './components/HousesList/HousesList';
-import { House } from './components/models/House';
 import React, { useEffect, useState } from 'react';
-import HouseDetails from './components/HouseDetails/HouseDetails';
 import styled from 'styled-components';
 
 import Sidebar from './components/Sidebar/Sidebar';
@@ -49,7 +46,7 @@ function App() {
     setOpen(!open);
   };
 
-  const drawerWidth = '200px';
+  const drawerWidth = '150px';
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -58,12 +55,12 @@ function App() {
           <Sidebar open={open} handleDrawerToggle={handleDrawerToggle} />
         </Box>
         <Box component="main" sx={{ pl: open ? drawerWidth : '100px' }}>
-          <Switch>
-            <Route path="/map" component={Map} />
-            <Route path="/houses" component={Houses} />
-            <Route path="/characters" component={Characters} />
-            <Route path="/books" component={Books} />
-          </Switch>
+          <Routes>
+            <Route path="/map" element={<Map/>} />
+            <Route path="/houses" element={<Houses/>} />
+            <Route path="/characters" element={<Characters/>} />
+            <Route path="/books" element={<Books/>} />
+          </Routes>
         </Box>
       </Router>
     </ThemeProvider>
