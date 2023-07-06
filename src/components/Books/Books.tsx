@@ -27,15 +27,16 @@ const Books: FC<any> = () => {
    useEffect(() => {
       axios.get(`https://www.anapioficeandfire.com/api/books?page=${page}&pageSize=10`)
          .then(response => {
-            console.log(response.data)
-            setBooks(response.data);
-            const total = response.headers['x-total-count'] || 0;
-            if (!isNaN(total)) {
-               setTotalPages(Math.ceil(total / 10));
-            } else {
-               console.error('Invalid total count:', response.headers['x-total-count']);
-               // handle error...
+            const linkHeader = response.headers.link;
+            if (linkHeader) {
+               const links = linkHeader.split(', ');
+               const totalPagesLink = links.find((link: any) => link.includes('rel="last"'));
+               if (totalPagesLink) {
+                  const totalPages = Number(new URL(totalPagesLink.split(';')[0].slice(1, -1)).searchParams.get('page'));
+                  setTotalPages(totalPages);
+               }
             }
+            setBooks(response.data);
          });
    }, [page]);
 

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
 
@@ -32,13 +32,28 @@ const Houses: FC<any> = () => {
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
    const [expanded, setExpanded] = useState(false);
+   const [filterName, setFilterName] = useState("");
+   const [filterRegion, setFilterRegion] = useState("");
 
    const handleExpandClick = () => {
       setExpanded(!expanded);
    };
 
+   const handleFilterNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFilterName(event.target.value);
+   };
+
+   const handleFilterRegionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFilterRegion(event.target.value);
+   };
+
+   const resetFilters = () => {
+      setFilterName("");
+      setFilterRegion("");
+   };
+
    useEffect(() => {
-      axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=10`)
+      axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=10&name=${filterName}&region=${filterRegion}`)
          .then(response => {
             console.log(response.data)
             setHouses(response.data);
@@ -53,7 +68,7 @@ const Houses: FC<any> = () => {
                }
             }
          });
-   }, [page]);
+   }, [page, filterName, filterRegion]);
 
    useEffect(() => {
       if (selectedHouse) {
@@ -106,71 +121,86 @@ const Houses: FC<any> = () => {
    }, [selectedHouse]);
 
    return (
-      <Box sx={{ display: 'flex', p: 2 }}>
-         <TableContainer component={Paper} sx={{ width: '50%', marginRight: '20px' }}>
-            <Table>
-               <TableHead>
-                  <TableRow>
-                     <TableCell>Name</TableCell>
-                     <TableCell>Region</TableCell>
-                  </TableRow>
-               </TableHead>
-               <TableBody>
-                  {houses.map((house, index) => (
-                     <TableRow key={index} onClick={() => setSelectedHouse(house)} style={{ cursor: 'pointer' }}>
-                        <TableCell>{house.name}</TableCell>
-                        <TableCell>{house.region}</TableCell>
+      <>
+         <Box sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+            <Grid container spacing={2}>
+               <Grid item xs={12} sm={6}>
+                  <TextField id="name" label="Name" variant="outlined" value={filterName} onChange={handleFilterNameChange} fullWidth />
+               </Grid>
+               <Grid item xs={12} sm={6}>
+                  <TextField label="Region" variant="outlined" value={filterRegion} onChange={handleFilterRegionChange} fullWidth />
+               </Grid>
+               <Grid item xs={12}>
+                  <Button variant="contained" color="primary" onClick={resetFilters}>Reset Filters</Button>
+               </Grid>
+            </Grid>
+         </Box>
+         <Box sx={{ display: 'flex', p: 2 }}>
+            <TableContainer component={Paper} sx={{ width: '50%', marginRight: '20px' }}>
+               <Table>
+                  <TableHead>
+                     <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Region</TableCell>
                      </TableRow>
-                  ))}
-               </TableBody>
-            </Table>
-            <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
-         </TableContainer>
-         {selectedHouse && (
-            <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-               <CardContent>
-                  <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
-                     {selectedHouse.name}
-                  </Typography>
-                  <Grid container spacing={2}>
-                     <Grid item xs={6}>
-                        <TextField label="Region" value={selectedHouse.region || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Coat Of Arms" value={selectedHouse.coatOfArms || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Current Lord" value={currentLord || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Heir" value={heir || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                     </Grid>
-                     <Grid item xs={6}>
-                        <TextField label="Ancestral Weapons" value={selectedHouse.ancestralWeapons.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Seats" value={selectedHouse.seats.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Words" value={selectedHouse.words || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                        <TextField label="Titles" value={selectedHouse.titles.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                     </Grid>
-                  </Grid>
-                  <Grid container spacing={2}>
-                     <Grid item xs={6}>
-                        <TextField label="Founded" value={selectedHouse.founded || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                     </Grid>
-                     <Grid item xs={6}>
-                        <TextField label="Died Out" value={selectedHouse.diedOut || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                     </Grid>
-                  </Grid>
-                  {swornMembers && (
-                     <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
-                        Sworn Members:
-                        {swornMembers.map((member, index) => {
-                           const id = member.url.split('/').pop(); // Extract the ID from the URL
-                           return (
-                              <Link to={`/characters/${id}`} key={index}>
-                                 {member.name}{index < swornMembers.length - 1 ? ', ' : ''}
-                              </Link>
-                           );
-                        })}
+                  </TableHead>
+                  <TableBody>
+                     {houses.map((house, index) => (
+                        <TableRow key={index} onClick={() => setSelectedHouse(house)} style={{ cursor: 'pointer' }}>
+                           <TableCell>{house.name}</TableCell>
+                           <TableCell>{house.region}</TableCell>
+                        </TableRow>
+                     ))}
+                  </TableBody>
+               </Table>
+               <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
+            </TableContainer>
+            {selectedHouse && (
+               <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+                  <CardContent>
+                     <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
+                        {selectedHouse.name}
                      </Typography>
-                  )}
-               </CardContent>
-            </Card>
-         )}
-      </Box>
+                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                           <TextField label="Region" value={selectedHouse.region || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Coat Of Arms" value={selectedHouse.coatOfArms || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Current Lord" value={currentLord || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Heir" value={heir || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                        </Grid>
+                        <Grid item xs={6}>
+                           <TextField label="Ancestral Weapons" value={selectedHouse.ancestralWeapons.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Seats" value={selectedHouse.seats.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Words" value={selectedHouse.words || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <TextField label="Titles" value={selectedHouse.titles.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                        </Grid>
+                     </Grid>
+                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                           <TextField label="Founded" value={selectedHouse.founded || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                        </Grid>
+                        <Grid item xs={6}>
+                           <TextField label="Died Out" value={selectedHouse.diedOut || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                        </Grid>
+                     </Grid>
+                     {swornMembers && (
+                        <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
+                           Sworn Members:
+                           {swornMembers.map((member, index) => {
+                              const id = member.url.split('/').pop(); // Extract the ID from the URL
+                              return (
+                                 <Link to={`/characters/${id}`} key={index}>
+                                    {member.name}{index < swornMembers.length - 1 ? ', ' : ''}
+                                 </Link>
+                              );
+                           })}
+                        </Typography>
+                     )}
+                  </CardContent>
+               </Card>
+            )}
+         </Box>
+      </>
    );
 }
 
