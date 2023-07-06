@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
 
@@ -33,6 +33,8 @@ const Houses: FC<any> = () => {
    const [totalPages, setTotalPages] = useState(1);
    const [expanded, setExpanded] = useState(false);
    const [filterName, setFilterName] = useState("");
+   const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [error, setError] = useState<string | null>(null);
    const [filterRegion, setFilterRegion] = useState("");
 
    const handleExpandClick = () => {
@@ -53,20 +55,22 @@ const Houses: FC<any> = () => {
    };
 
    useEffect(() => {
+      setIsLoading(true);
       axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=10&name=${filterName}&region=${filterRegion}`)
          .then(response => {
-            console.log(response.data)
             setHouses(response.data);
             const linkHeader = response.headers['link'];
             if (linkHeader) {
                const matches = linkHeader.match(/page=([0-9]+)&pageSize=10>; rel="last"/);
                if (matches && matches[1]) {
                   setTotalPages(parseInt(matches[1], 10));
-               } else {
-                  console.error('Invalid link header:', linkHeader);
-                  // handle error...
                }
             }
+            setIsLoading(false);
+         })
+         .catch(err => {
+            setError("Error fetching houses, please try again later.")
+            setIsLoading(false);
          });
    }, [page, filterName, filterRegion]);
 
@@ -119,6 +123,9 @@ const Houses: FC<any> = () => {
          fetchSwornMembers();
       }
    }, [selectedHouse]);
+
+   if (isLoading) return <CircularProgress />;
+   if (error) return <p>{error}</p>;
 
    return (
       <>
