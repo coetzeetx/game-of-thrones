@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, ChangeEvent, useCallback  } from 'react';
 import axios from 'axios';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination } from '@mui/material';
 import { Card, CardContent, Typography, Grid, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { debounce } from 'lodash';
+
 
 interface Character {
    url: string;
@@ -23,50 +24,79 @@ interface Character {
    tvSeries: string[];
    playedBy: string[];
 }
-interface CharactersProps { }
 
-const Characters: FC<CharactersProps> = () => {
+const Characters: FC = () => {
    const [characters, setCharacters] = useState<Character[]>([]);
+   const [searchTerm, setSearchTerm] = useState("");
    const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
    const [page, setPage] = useState(1);
    const navigate = useNavigate();
+   const { id } = useParams();
+   const [totalPages, setTotalPages] = useState(1);
+
+   const debouncedSave = useCallback(
+      debounce((nextValue: any) => setSearchTerm(nextValue), 1000),
+      [], // will be created only once initially
+    );
 
    useEffect(() => {
-      axios.get(`https://www.anapioficeandfire.com/api/characters?page=${page}&pageSize=10`)
-         .then(response => {
-            setCharacters(response.data);
-         });
-   }, [page]);
+      axios.get(`https://www.anapioficeandfire.com/api/characters?name=${searchTerm}&page=${page}&pageSize=10`)
+        .then(response => {
+          // Extract Link header
+          const linkHeader = response.headers.link;
+          if (linkHeader) {
+            const links = linkHeader.split(', ');
+            const totalPagesLink = links.find((link: any) => link.includes('rel="last"'));
+            if (totalPagesLink) {
+              const totalPages = Number(new URL(totalPagesLink.split(';')[0].slice(1, -1)).searchParams.get('page'));
+              setTotalPages(totalPages);
+            }
+          }
+          setCharacters(response.data);
+        });
+    }, [page, searchTerm]);
 
-   const columns: GridColDef[] = [
-      { field: 'name', headerName: 'Name', width: 200, valueGetter: (params) => params.row.name || params.row.aliases[0] || 'Unknown Character' },
-      { field: 'gender', headerName: 'Gender', width: 200 },
-      { field: 'culture', headerName: 'Culture', width: 200 },
-      { field: 'born', headerName: 'Born', width: 200 },
-      { field: 'died', headerName: 'Died', width: 200 },
-   ];
+   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+   };
+
+   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+      const { value: nextValue } = event.target;
+      // Even though handleChange is created on each render and executed
+      // If the text box's value is changed within less than 1 second another handler will be created
+      // The "leading" handler will be invoked with the "trailing" ones' parameter
+      debouncedSave(nextValue);
+    };
 
    return (
-      <Box sx={{ display: 'flex', height: '100vh', width: '100%' }}>
-         <Box sx={{ width: '50%' }}>
-            <DataGrid
-               rows={characters}
-               columns={columns}
-               initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 10,
-                    },
-                  },
-                }}
-               pageSizeOptions={[10]}
-               getRowId={(row) => row.url}
-               onRowSelectionModelChange={(newSelection) => {
-                  const selectedUrl = newSelection[0];
-                  const selectedCharacter = characters.find(character => character.url === selectedUrl);
-                  setSelectedCharacter(selectedCharacter || null);
-              }}
-            />
+      <Box sx={{ display: 'flex', p: 2 }}>
+         <Box sx={{ width: '50%', marginRight: '20px' }}>
+            <TextField id="outlined-basic" label="Search" variant="outlined" onChange={handleSearchChange} />
+            <TableContainer component={Paper}>
+               <Table>
+                  <TableHead>
+                     <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Gender</TableCell>
+                        <TableCell>Culture</TableCell>
+                        <TableCell>Born</TableCell>
+                        <TableCell>Died</TableCell>
+                     </TableRow>
+                  </TableHead>
+                  <TableBody>
+                     {characters.map((character) => (
+                        <TableRow key={character.url} onClick={() => setSelectedCharacter(character)}>
+                           <TableCell>{character.name || character.aliases[0] || 'Unknown Character'}</TableCell>
+                           <TableCell>{character.gender}</TableCell>
+                           <TableCell>{character.culture}</TableCell>
+                           <TableCell>{character.born}</TableCell>
+                           <TableCell>{character.died}</TableCell>
+                        </TableRow>
+                     ))}
+                  </TableBody>
+               </Table>
+               <Pagination count={totalPages} page={page} onChange={handlePageChange} />
+            </TableContainer>
          </Box>
          {selectedCharacter && (
             <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>

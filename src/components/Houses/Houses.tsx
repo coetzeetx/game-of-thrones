@@ -42,12 +42,15 @@ const Houses: FC<any> = () => {
          .then(response => {
             console.log(response.data)
             setHouses(response.data);
-            const total = response.headers['x-total-count'] || 0;
-            if (!isNaN(total)) {
-               setTotalPages(Math.ceil(total / 10));
-            } else {
-               console.error('Invalid total count:', response.headers['x-total-count']);
-               // handle error...
+            const linkHeader = response.headers['link'];
+            if (linkHeader) {
+               const matches = linkHeader.match(/page=([0-9]+)&pageSize=10>; rel="last"/);
+               if (matches && matches[1]) {
+                  setTotalPages(parseInt(matches[1], 10));
+               } else {
+                  console.error('Invalid link header:', linkHeader);
+                  // handle error...
+               }
             }
          });
    }, [page]);

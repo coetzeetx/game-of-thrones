@@ -59,6 +59,7 @@ function App() {
             <Route path="/map" element={<Map/>} />
             <Route path="/houses" element={<Houses/>} />
             <Route path="/characters" element={<Characters/>} />
+            <Route path="/characters/:id" element={<Characters/>} />
             <Route path="/books" element={<Books/>} />
           </Routes>
         </Box>
