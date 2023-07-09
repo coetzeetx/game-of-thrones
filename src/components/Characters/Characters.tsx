@@ -126,7 +126,6 @@ const Characters: FC = () => {
 
    const resetFilters = () => {
       navigate('/characters');
-      setSelectedCharacter(null);
       setName("");
       setGender("");
       setCulture("");
