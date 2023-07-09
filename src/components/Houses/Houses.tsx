@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress, makeStyles, Theme, createStyles } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress, makeStyles, Theme, createStyles, Skeleton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -50,7 +50,7 @@ const Houses: FC<any> = () => {
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
    const [filterName, setFilterName] = useState("");
-   const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [isLoadingSelectedHouse, setIsLoadingSelectedHouse] = useState<boolean>(false);
    const [error, setError] = useState<string | null>(null);
    const [filterRegion, setFilterRegion] = useState("");
 
@@ -87,6 +87,7 @@ const Houses: FC<any> = () => {
 
    useEffect(() => {
       if (selectedHouse) {
+         setIsLoadingSelectedHouse(true);
          const fetchLord = async () => {
             if (selectedHouse.currentLord) {
                try {
@@ -129,9 +130,9 @@ const Houses: FC<any> = () => {
             }
          };
 
-         fetchLord();
-         fetchHeir();
-         fetchSwornMembers();
+         Promise.all([fetchLord(), fetchHeir(), fetchSwornMembers()])
+            .then(() => setIsLoadingSelectedHouse(false))
+            .catch(error => console.error("Error fetching additional house info: ", error));
       }
    }, [selectedHouse]);
 
@@ -180,7 +181,39 @@ const Houses: FC<any> = () => {
                </Table>
                <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
             </TableContainer>
-            {selectedHouse && (
+            {isLoadingSelectedHouse ? (
+               <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+                  {/* Skeleton Card Content */}
+                  <CardContent>
+                     <Skeleton variant="text" height={30} />
+                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                           <Skeleton variant="rectangular" height={56} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                        </Grid>
+                        <Grid item xs={6}>
+                           <Skeleton variant="rectangular" height={56} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                        </Grid>
+                     </Grid>
+                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                        </Grid>
+                        <Grid item xs={6}>
+                           <Skeleton variant="rectangular" height={56} sx={{ marginTop: 2 }} />
+                        </Grid>
+                     </Grid>
+                     <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
+                        <Skeleton variant="text" />
+                     </Typography>
+                  </CardContent>
+               </Card>
+            ) : selectedHouse && (
                <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
                   <CardContent>
                      <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
