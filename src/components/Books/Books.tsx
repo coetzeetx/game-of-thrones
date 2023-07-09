@@ -94,6 +94,7 @@ const Books: FC<any> = () => {
 
    const resetFilters = () => {
       navigate('/books');
+      setName('');
    };
 
    const loadMoreCharacters = () => {
