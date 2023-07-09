@@ -5,6 +5,8 @@ import { Card, CardContent, Typography, Grid, TextField, List, ListItem, ListIte
 import { FormControl, InputLabel, Select, MenuItem, Button, FormHelperText } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { debounce } from 'lodash';
+import { Link } from 'react-router-dom';
+import { Book } from '../Books/Books';
 
 
 interface Character {
@@ -40,6 +42,7 @@ const Characters: FC = () => {
    const [died, setDied] = useState("");
    const [isAlive, setIsAlive] = useState("");
    const [name, setName] = useState("");
+   const [books, setBooks] = useState<Book[]>([]);
 
    const debouncedSave = useCallback(
       debounce((nextValue: any) => setSearchTerm(nextValue), 1000),
@@ -48,17 +51,17 @@ const Characters: FC = () => {
 
    useEffect(() => {
       if (id) {
-        // fetch character's name by id and set it as name filter
-        axios.get(`https://www.anapioficeandfire.com/api/characters/${id}`)
-          .then(response => {
-            setName(response.data.name);
-            setSelectedCharacter(response.data);
-          })
-          .catch(error => {
-            console.error("Error fetching character: ", error);
-          });
+         // fetch character's name by id and set it as name filter
+         axios.get(`https://www.anapioficeandfire.com/api/characters/${id}`)
+            .then(response => {
+               setName(response.data.name);
+               setSelectedCharacter(response.data);
+            })
+            .catch(error => {
+               console.error("Error fetching character: ", error);
+            });
       }
-    }, [id]);
+   }, [id]);
 
    useEffect(() => {
       let url = `https://www.anapioficeandfire.com/api/characters?name=${name}&page=${page}&pageSize=10`;
@@ -83,6 +86,16 @@ const Characters: FC = () => {
                }
             }
             setCharacters(response.data);
+
+            if (response.data[0] && response.data[0].books) {
+               Promise.all(response.data[0].books.map((bookUrl: string) =>
+                  axios.get(bookUrl)))
+                  .then(bookResponses => {
+                     setBooks(bookResponses.map((res) => res.data));
+                  });
+            } else {
+               setBooks([]);
+            }
          });
    }, [page, searchTerm, gender, culture, born, died, isAlive, name]);
 
@@ -185,6 +198,24 @@ const Characters: FC = () => {
                                  <ListItemText primary={alias} />
                               </ListItem>
                            ))}
+                        </List>
+                     </Typography>
+
+                     <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
+                        Books:
+                        <List>
+                           {books.length > 0 ? (
+                              books.map((book, index) => {
+                                 const bookId = book.url.split('/').pop() || '';
+                                 return (
+                                       <Link to={`/books/${bookId}`}>
+                                          {book.name}{index < books.length - 1 ? ', ' : ''}
+                                       </Link>
+                                 )
+                              })
+                           ) : (
+                              'None'
+                           )}
                         </List>
                      </Typography>
                   </CardContent>

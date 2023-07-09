@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { Box } from '@mui/system';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -32,11 +32,13 @@ function App() {
         }}
       >
         <Routes>
+          <Route path="/" element={<Navigate to="/map"/>} />
           <Route path="/map" element={<Map/>} />
           <Route path="/houses" element={<Houses/>} />
           <Route path="/characters" element={<Characters/>} />
           <Route path="/characters/:id" element={<Characters/>} />
           <Route path="/books" element={<Books/>} />
+          <Route path="/books/:id" element={<Books/>} />
         </Routes>
       </Box>
     </Router>
