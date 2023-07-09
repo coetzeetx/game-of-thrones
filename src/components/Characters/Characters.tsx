@@ -6,6 +6,7 @@ import { Button } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Book } from '../Books/Books';
+import { styled } from '@mui/system';
 
 
 interface Character {
@@ -26,6 +27,23 @@ interface Character {
    tvSeries: string[];
    playedBy: string[];
 }
+
+const FormTextField = styled(TextField)({
+   '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Default border color
+      },
+      '&:hover fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Hover border color
+      },
+      '&.Mui-focused fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Focused border color
+      },
+      '& .MuiOutlinedInput-input': {
+         cursor: 'default', // Cursor will not change over the input field
+      }
+   },
+});
 
 const Characters: FC = () => {
    const [characters, setCharacters] = useState<Character[]>([]);
@@ -169,22 +187,28 @@ const Characters: FC = () => {
                      </Typography>
                      <Grid container spacing={2}>
                         <Grid item xs={6}>
-                           <TextField label="Gender" value={selectedCharacter.gender} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Culture" value={selectedCharacter.culture} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Gender" value={selectedCharacter.gender || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Culture" value={selectedCharacter.culture || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                         <Grid item xs={6}>
-                           <TextField label="Born" value={selectedCharacter.born} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Died" value={selectedCharacter.died} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Born" value={selectedCharacter.born || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Died" value={selectedCharacter.died || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                      </Grid>
                      <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
                         Aliases:
                         <List>
-                           {selectedCharacter.aliases.map((alias, index) => (
-                              <ListItem key={index}>
-                                 <ListItemText primary={alias} />
-                              </ListItem>
-                           ))}
+                           {selectedCharacter.aliases && selectedCharacter.aliases.length > 0 ? (
+                              selectedCharacter.aliases.map((alias, index) => {
+                                 return (
+                                    <ListItem key={index}>
+                                       <ListItemText primary={alias} />
+                                    </ListItem>
+                                 );
+                              })
+                           ) : (
+                              ' Unknown'
+                           )}
                         </List>
                      </Typography>
 
@@ -195,9 +219,9 @@ const Characters: FC = () => {
                               books.map((book, index) => {
                                  const bookId = book.url.split('/').pop() || '';
                                  return (
-                                       <Link to={`/books/${bookId}`}>
-                                          {book.name}{index < books.length - 1 ? ', ' : ''}
-                                       </Link>
+                                    <Link to={`/books/${bookId}`}>
+                                       {book.name}{index < books.length - 1 ? ', ' : ''}
+                                    </Link>
                                  )
                               })
                            ) : (

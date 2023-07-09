@@ -2,6 +2,7 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, TextField, Grid, Button, Skeleton } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { styled } from '@mui/system';
 
 export interface Book {
    id: number;
@@ -16,6 +17,23 @@ export interface Book {
    released: string;
    characters: string[];
 }
+
+const FormTextField = styled(TextField)({
+   '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Default border color
+      },
+      '&:hover fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Hover border color
+      },
+      '&.Mui-focused fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Focused border color
+      },
+      '& .MuiOutlinedInput-input': {
+         cursor: 'default', // Cursor will not change over the input field
+      }
+   },
+});
 
 const Books: FC<any> = () => {
    const [books, setBooks] = useState<Book[]>([]);
@@ -161,14 +179,14 @@ const Books: FC<any> = () => {
                      </Typography>
                      <Grid container spacing={2}>
                         <Grid item xs={6}>
-                           <TextField label="ISBN" value={selectedBook.isbn || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Number of Pages" value={selectedBook.numberOfPages || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Publisher" value={selectedBook.publisher || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Country" value={selectedBook.country || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="ISBN" value={selectedBook.isbn || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Number of Pages" value={selectedBook.numberOfPages || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Publisher" value={selectedBook.publisher || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Country" value={selectedBook.country || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                         <Grid item xs={6}>
-                           <TextField label="Media Type" value={selectedBook.mediaType || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Released" value={selectedBook.released || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Media Type" value={selectedBook.mediaType || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Released" value={selectedBook.released || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                      </Grid>
                      {characters && (
