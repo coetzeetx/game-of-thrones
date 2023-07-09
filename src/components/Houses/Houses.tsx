@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress, makeStyles, Theme, createStyles } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
+import { styled } from '@mui/system';
 
 interface House {
    id: number;
@@ -23,6 +24,23 @@ interface House {
    words: string;
 }
 
+const FormTextField = styled(TextField)({
+   '& .MuiOutlinedInput-root': {
+     '& fieldset': {
+       borderColor: 'rgba(0, 0, 0, 0.23)', // Default border color
+     },
+     '&:hover fieldset': {
+       borderColor: 'rgba(0, 0, 0, 0.23)', // Hover border color
+     },
+     '&.Mui-focused fieldset': {
+       borderColor: 'rgba(0, 0, 0, 0.23)', // Focused border color
+     },
+     '& .MuiOutlinedInput-input': {
+      cursor: 'default', // Cursor will not change over the input field
+    }
+   },
+ });
+
 const Houses: FC<any> = () => {
    const [houses, setHouses] = useState<House[]>([]);
    const [selectedHouse, setSelectedHouse] = useState<House | null>(null);
@@ -31,15 +49,11 @@ const Houses: FC<any> = () => {
    const [heir, setHeir] = useState<string | null>(null);
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
-   const [expanded, setExpanded] = useState(false);
    const [filterName, setFilterName] = useState("");
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const [error, setError] = useState<string | null>(null);
    const [filterRegion, setFilterRegion] = useState("");
 
-   const handleExpandClick = () => {
-      setExpanded(!expanded);
-   };
 
    const handleFilterNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setFilterName(event.target.value);
@@ -55,7 +69,6 @@ const Houses: FC<any> = () => {
    };
 
    useEffect(() => {
-      setIsLoading(true);
       axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=10&name=${filterName}&region=${filterRegion}`)
          .then(response => {
             setHouses(response.data);
@@ -66,11 +79,9 @@ const Houses: FC<any> = () => {
                   setTotalPages(parseInt(matches[1], 10));
                }
             }
-            setIsLoading(false);
          })
          .catch(err => {
             setError("Error fetching houses, please try again later.")
-            setIsLoading(false);
          });
    }, [page, filterName, filterRegion]);
 
@@ -170,37 +181,41 @@ const Houses: FC<any> = () => {
                      </Typography>
                      <Grid container spacing={2}>
                         <Grid item xs={6}>
-                           <TextField label="Region" value={selectedHouse.region || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Coat Of Arms" value={selectedHouse.coatOfArms || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Current Lord" value={currentLord || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Heir" value={heir || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Region" value={selectedHouse.region || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Coat Of Arms" value={selectedHouse.coatOfArms || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Current Lord" value={currentLord || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Heir" value={heir || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                         <Grid item xs={6}>
-                           <TextField label="Ancestral Weapons" value={selectedHouse.ancestralWeapons.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Seats" value={selectedHouse.seats.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Words" value={selectedHouse.words || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
-                           <TextField label="Titles" value={selectedHouse.titles.join(', ') || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Ancestral Weapons" value={selectedHouse.ancestralWeapons.join(', ') || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Seats" value={selectedHouse.seats.join(', ') || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Words" value={selectedHouse.words || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Titles" value={selectedHouse.titles.join(', ') || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                      </Grid>
                      <Grid container spacing={2}>
                         <Grid item xs={6}>
-                           <TextField label="Founded" value={selectedHouse.founded || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Founded" value={selectedHouse.founded || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                         <Grid item xs={6}>
-                           <TextField label="Died Out" value={selectedHouse.diedOut || ""} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
+                           <FormTextField label="Died Out" value={selectedHouse.diedOut || "Unknown"} fullWidth margin="normal" InputProps={{ readOnly: true }} variant="outlined" />
                         </Grid>
                      </Grid>
                      {swornMembers && (
                         <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
                            Sworn Members:
-                           {swornMembers.map((member, index) => {
-                              const id = member.url.split('/').pop(); // Extract the ID from the URL
-                              return (
-                                 <Link to={`/characters/${id}`} key={index}>
-                                    {member.name}{index < swornMembers.length - 1 ? ', ' : ''}
-                                 </Link>
-                              );
-                           })}
+                           {swornMembers && swornMembers.length > 0 ? (
+                              swornMembers.map((member, index) => {
+                                 const id = member.url.split('/').pop(); // Extract the ID from the URL
+                                 return (
+                                    <Link to={`/characters/${id}`} key={index}>
+                                       {member.name}{index < swornMembers.length - 1 ? ', ' : ''}
+                                    </Link>
+                                 );
+                              })
+                           ) : (
+                              ' Unknown'
+                           )}
                         </Typography>
                      )}
                   </CardContent>

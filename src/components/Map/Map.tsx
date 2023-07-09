@@ -28,14 +28,14 @@ function CustomZoomControl() {
 
 
   return (
-    <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
-      <IconButton color="primary" onClick={() => { map.zoomIn(); }}>
-        <ZoomInIcon fontSize='large'/>
-      </IconButton>
-      <IconButton color="primary" onClick={() => { map.zoomOut(); }}>
-        <ZoomOutIcon fontSize='large'/>
-      </IconButton>
-    </Box>
+<Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
+  <IconButton sx={{ color: "#000000" }} onClick={() => { map.zoomIn(); }}>
+    <ZoomInIcon fontSize='large'/>
+  </IconButton>
+  <IconButton sx={{ color: "#000000" }} onClick={() => { map.zoomOut(); }}>
+    <ZoomOutIcon fontSize='large'/>
+  </IconButton>
+</Box>
   );
 }
 
@@ -49,7 +49,7 @@ function Map() {
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column',  backgroundColor: '#36454F' }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ backgroundColor: "#000000"}}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             The Known World
