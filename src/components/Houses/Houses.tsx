@@ -26,20 +26,20 @@ interface House {
 
 const FormTextField = styled(TextField)({
    '& .MuiOutlinedInput-root': {
-     '& fieldset': {
-       borderColor: 'rgba(0, 0, 0, 0.23)', // Default border color
-     },
-     '&:hover fieldset': {
-       borderColor: 'rgba(0, 0, 0, 0.23)', // Hover border color
-     },
-     '&.Mui-focused fieldset': {
-       borderColor: 'rgba(0, 0, 0, 0.23)', // Focused border color
-     },
-     '& .MuiOutlinedInput-input': {
-      cursor: 'default', // Cursor will not change over the input field
-    }
+      '& fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Default border color
+      },
+      '&:hover fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Hover border color
+      },
+      '&.Mui-focused fieldset': {
+         borderColor: 'rgba(0, 0, 0, 0.23)', // Focused border color
+      },
+      '& .MuiOutlinedInput-input': {
+         cursor: 'default', // Cursor will not change over the input field
+      }
    },
- });
+});
 
 const Houses: FC<any> = () => {
    const [houses, setHouses] = useState<House[]>([]);
@@ -135,7 +135,6 @@ const Houses: FC<any> = () => {
       }
    }, [selectedHouse]);
 
-   if (isLoading) return <CircularProgress />;
    if (error) return <p>{error}</p>;
 
    return (
@@ -163,12 +162,20 @@ const Houses: FC<any> = () => {
                      </TableRow>
                   </TableHead>
                   <TableBody>
-                     {houses.map((house, index) => (
-                        <TableRow key={index} onClick={() => setSelectedHouse(house)} style={{ cursor: 'pointer' }}>
-                           <TableCell>{house.name}</TableCell>
-                           <TableCell>{house.region}</TableCell>
+                     {houses.length > 0 ? (
+                        houses.map((house, index) => (
+                           <TableRow key={index} onClick={() => setSelectedHouse(house)} style={{ cursor: 'pointer' }}>
+                              <TableCell>{house.name}</TableCell>
+                              <TableCell>{house.region}</TableCell>
+                           </TableRow>
+                        ))
+                     ) : (
+                        <TableRow>
+                           <TableCell colSpan={2} align="center">
+                              No results found
+                           </TableCell>
                         </TableRow>
-                     ))}
+                     )}
                   </TableBody>
                </Table>
                <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
