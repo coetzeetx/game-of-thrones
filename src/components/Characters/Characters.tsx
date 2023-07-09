@@ -1,10 +1,9 @@
-import React, { FC, useEffect, useState, ChangeEvent, useCallback } from 'react';
+import React, { FC, useEffect, useState, ChangeEvent } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination } from '@mui/material';
 import { Card, CardContent, Typography, Grid, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
-import { FormControl, InputLabel, Select, MenuItem, Button, FormHelperText } from '@mui/material';
+import { Button } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Book } from '../Books/Books';
 
@@ -44,10 +43,6 @@ const Characters: FC = () => {
    const [name, setName] = useState("");
    const [books, setBooks] = useState<Book[]>([]);
 
-   const debouncedSave = useCallback(
-      debounce((nextValue: any) => setSearchTerm(nextValue), 1000),
-      [], // will be created only once initially
-   );
 
    useEffect(() => {
       if (id) {
@@ -101,14 +96,6 @@ const Characters: FC = () => {
 
    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
       setPage(value);
-   };
-
-   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const { value: nextValue } = event.target;
-      // Even though handleChange is created on each render and executed
-      // If the text box's value is changed within less than 1 second another handler will be created
-      // The "leading" handler will be invoked with the "trailing" ones' parameter
-      debouncedSave(nextValue);
    };
 
    const handleGenderChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -1,7 +1,6 @@
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, Button } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, TextField, Grid, Button, Skeleton } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export interface Book {
@@ -28,6 +27,7 @@ const Books: FC<any> = () => {
    const [name, setName] = useState("");
    const navigate = useNavigate();
    const [characterIndex, setCharacterIndex] = useState(50);
+   const [isLoading, setIsLoading] = useState(false);
 
    useEffect(() => {
       if (id) {
@@ -63,6 +63,7 @@ const Books: FC<any> = () => {
 
    useEffect(() => {
       if (selectedBook) {
+         setIsLoading(true);
          const fetchCharacters = async () => {
             if (selectedBook.characters.length > 0) {
                try {
@@ -79,7 +80,7 @@ const Books: FC<any> = () => {
             }
          };
 
-         fetchCharacters();
+         fetchCharacters().finally(() => setIsLoading(false));
       }
    }, [selectedBook, characterIndex]);
 
@@ -133,8 +134,26 @@ const Books: FC<any> = () => {
                </Table>
                <Pagination count={totalPages} page={page} onChange={handlePageChange} />
             </TableContainer>
-            {selectedBook && (
-               <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+            <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+               {isLoading ? (
+                  <CardContent>
+                     <Skeleton variant="text" height={30} />
+                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                           <Skeleton variant="text" height={56} width="80%" />
+                           <Skeleton variant="text" height={56} width="80%" />
+                           <Skeleton variant="text" height={56} width="80%" />
+                           <Skeleton variant="text" height={56} width="80%" />
+                        </Grid>
+                        <Grid item xs={6}>
+                           <Skeleton variant="text" height={56} width="80%" />
+                           <Skeleton variant="text" height={56} width="80%" />
+                        </Grid>
+                     </Grid>
+                     <Skeleton variant="text" />
+                     <Skeleton variant="text" />
+                  </CardContent>
+               ) : selectedBook ? (
                   <CardContent>
                      <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
                         {selectedBook.name}
@@ -158,7 +177,7 @@ const Books: FC<any> = () => {
                               const id = character.url.split('/').pop(); // Extract the ID from the URL
                               return (
                                  <Link to={`/characters/${id}`} key={index}>
-                                    {character.name}{index < characters.length - 1 ? ', ' : ''}
+                                    {character.name ? character.name : character.aliases[0]}{index < characters.length - 1 ? ', ' : ''}
                                  </Link>
                               );
                            })}
@@ -166,11 +185,12 @@ const Books: FC<any> = () => {
 
                      )}
                      {selectedBook && characterIndex < selectedBook.characters.length && (
-                        <Button style={{marginTop: '10px'}} variant="outlined" onClick={loadMoreCharacters}>Load More Characters</Button>
+                        <Button style={{ marginTop: '10px' }} variant="outlined" onClick={loadMoreCharacters}>Load More Characters</Button>
                      )}
                   </CardContent>
-               </Card>
-            )}
+               ) : null}
+            </Card>
+
          </Box>
       </>
    );
