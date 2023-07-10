@@ -67,6 +67,4 @@ describe('<Books />', () => {
     // Wait for the character to be fetched
     await waitFor(() => expect(screen.getByText('Character Name')).toBeInTheDocument());
   });
-
-  // Add more tests as needed
 });
