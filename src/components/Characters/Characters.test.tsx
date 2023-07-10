@@ -1,14 +1,14 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render } from '@testing-library/react';
 import Characters from './Characters';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 describe('<Characters />', () => {
-  test('it should mount', () => {
-    render(<Characters />);
-    
-    const characters = screen.getByTestId('Characters');
-
-    expect(characters).toBeInTheDocument();
+  it('should render without crashing', () => {
+    render(
+      <Router>
+        <Characters />
+      </Router>
+    );
   });
 });

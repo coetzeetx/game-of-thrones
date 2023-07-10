@@ -14,9 +14,10 @@ const Sidebar: FC<SidebarProps> = ({open, handleDrawerToggle}) => {
       <Drawer
          variant="permanent"
          open={open}
+         data-testid="Sidebar"
       >
          <IconButton onClick={handleDrawerToggle}>
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            {open ? <ChevronLeftIcon  /> : <MenuIcon />}
          </IconButton>
          <List>
             <ListItem button component={Link} to="/map">

@@ -23,7 +23,7 @@ interface MainTableProps {
    pagination: Pagination;
 }
 
-const MainTable: FC<MainTableProps> = ({items, columns, onClickHandler, pagination}) => {
+const MainTable: FC<MainTableProps> = ({ items, columns, onClickHandler, pagination }) => {
 
    const handleChangePage = (
       event: React.MouseEvent<HTMLButtonElement> | null,
@@ -39,63 +39,67 @@ const MainTable: FC<MainTableProps> = ({items, columns, onClickHandler, paginati
    };
 
    return (
-            <TableContainer component={Paper} sx={{
-               width: '50%',
-               marginRight: '20px',
-               maxHeight: 600,
-               overflow: 'auto'
-            }}>
-               <Table stickyHeader>
-                  <TableHead>
-                     <TableRow>
-                        {columns.map((column, columnIndex) => (
-                           <TableCell>{column.displayName}</TableCell>
-                        ))}
+      <TableContainer component={Paper} sx={{
+         width: '50%',
+         marginRight: '20px',
+         maxHeight: 600,
+         overflow: 'auto'
+      }}>
+         <Table stickyHeader>
+            <TableHead>
+               <TableRow>
+                  {columns.map((column, columnIndex) => (
+                     <TableCell>{column.displayName}</TableCell>
+                  ))}
+               </TableRow>
+            </TableHead>
+            <TableBody>
+               {items.length > 0 ? (
+                  items.map((item: any, index) => (
+                     <TableRow key={index} onClick={() => onClickHandler(item)} style={{ cursor: 'pointer' }}>
+                        {columns.map((column, columnIndex) => {
+                           // Check if the attributeKey is 'name', if it is and it's empty, replace with 'alias'
+                           let value = column.attributeKey === 'name' && !item[column.attributeKey] ? item['aliases'] : item[column.attributeKey];
+                           // Check if the value is a list
+                           value = column.isList && Array.isArray(value) ? value.join(', ') : value;
+                           return <TableCell key={`${index}-${columnIndex}`}>{value}</TableCell>
+                        })}
                      </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {items.length > 0 ? (
-                        items.map((item: any, index) => (
-                           <TableRow key={index} onClick={() => onClickHandler(item)} style={{ cursor: 'pointer' }}>
-                              {columns.map((column, columnIndex) => (
-                                 <TableCell key={columnIndex}>{column.isList ? item[column.attributeKey].join(', ') : item[column.attributeKey]}</TableCell>
-                              ))}
-                           </TableRow>
-                        ))
-                     ) : (
-                        <TableRow>
-                           <TableCell colSpan={2} align="center">
-                              No results found
-                           </TableCell>
-                        </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-               <Box
-                  sx={{
-                     display: 'flex',
-                     justifyContent: 'left',
-                     alignItems: 'center',
-                     position: 'sticky',
-                     bottom: 0,
-                     backgroundColor: 'white',
-                     zIndex: 100,
-                     padding: 2,
-                     height: '30px',
-                     borderTop: '1px solid #e0e0e0'
-                  }}
-               >
-                  <TablePagination
-                     component="div"
-                     count={pagination.totalPages * pagination.rowsPerPage}
-                     page={pagination.page - 1}
-                     onPageChange={handleChangePage}
-                     rowsPerPage={pagination.rowsPerPage}
-                     onRowsPerPageChange={handleChangeRowsPerPage}
-                     rowsPerPageOptions={[10, 25, 50]}
-                  />
-               </Box>
-            </TableContainer>
+                  ))
+               ) : (
+                  <TableRow>
+                     <TableCell colSpan={2} align="center">
+                        No results found
+                     </TableCell>
+                  </TableRow>
+               )}
+            </TableBody>
+         </Table>
+         <Box
+            sx={{
+               display: 'flex',
+               justifyContent: 'left',
+               alignItems: 'center',
+               position: 'sticky',
+               bottom: 0,
+               backgroundColor: 'white',
+               zIndex: 100,
+               padding: 2,
+               height: '30px',
+               borderTop: '1px solid #e0e0e0'
+            }}
+         >
+            <TablePagination
+               component="div"
+               count={pagination.totalPages * pagination.rowsPerPage}
+               page={pagination.page - 1}
+               onPageChange={handleChangePage}
+               rowsPerPage={pagination.rowsPerPage}
+               onRowsPerPageChange={handleChangeRowsPerPage}
+               rowsPerPageOptions={[10, 25, 50]}
+            />
+         </Box>
+      </TableContainer>
    );
 };
 

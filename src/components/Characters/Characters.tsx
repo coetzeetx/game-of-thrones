@@ -64,7 +64,6 @@ const Characters: FC = () => {
    const [books, setBooks] = useState<Book[]>([]);
    const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
    useEffect(() => {
       if (id) {
          // fetch character's name by id and set it as name filter

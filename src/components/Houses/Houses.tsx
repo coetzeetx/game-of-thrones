@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress, makeStyles, Theme, createStyles, Skeleton } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import TablePagination from '@mui/material/TablePagination';
+import { Box, Card, CardContent, Typography, TextField, Grid, Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { styled } from '@mui/system';
 import FilterBox from '../shared/FilterBox/FilterBox';

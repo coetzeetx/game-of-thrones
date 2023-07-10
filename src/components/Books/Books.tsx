@@ -229,7 +229,7 @@ const Books: FC<any> = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
                            Characters:
                            {characters.map((character, index) => {
-                              const id = character.url.split('/').pop(); // Extract the ID from the URL
+                              const id = character.url.split('/').pop();
                               return (
                                  <Link to={`/characters/${id}`} key={index}>
                                     {character.name ? character.name : character.aliases[0]}{index < characters.length - 1 ? ', ' : ''}
