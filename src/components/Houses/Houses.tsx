@@ -2,8 +2,11 @@ import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, List, ListItem, ListItemText, Collapse, IconButton, TextField, Grid, CircularProgress, makeStyles, Theme, createStyles, Skeleton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TablePagination from '@mui/material/TablePagination';
 import { Link } from 'react-router-dom';
 import { styled } from '@mui/system';
+import FilterBox from '../shared/FilterBox/FilterBox';
+import MainTable from '../shared/MainTable/MainTable';
 
 interface House {
    id: number;
@@ -48,11 +51,14 @@ const Houses: FC<any> = () => {
    const [swornMembers, setSwornMembers] = useState<any[]>([]);
    const [heir, setHeir] = useState<string | null>(null);
    const [page, setPage] = useState(1);
+   const [rowsPerPage, setRowsPerPage] = useState(10);
+
    const [totalPages, setTotalPages] = useState(1);
    const [filterName, setFilterName] = useState("");
    const [isLoadingSelectedHouse, setIsLoadingSelectedHouse] = useState<boolean>(false);
    const [error, setError] = useState<string | null>(null);
    const [filterRegion, setFilterRegion] = useState("");
+
 
 
    const handleFilterNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,22 +74,44 @@ const Houses: FC<any> = () => {
       setFilterRegion("");
    };
 
+
+
    useEffect(() => {
-      axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=10&name=${filterName}&region=${filterRegion}`)
-         .then(response => {
+      const fetchHouses = async () => {
+         const encodedRowsPerPage = encodeURIComponent(rowsPerPage);
+         const encodedFilterName = encodeURIComponent(filterName);
+         const encodedFilterRegion = encodeURIComponent(filterRegion);
+
+         try {
+            const response = await axios.get(`https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=${encodedRowsPerPage}&name=${encodedFilterName}&region=${encodedFilterRegion}`);
             setHouses(response.data);
             const linkHeader = response.headers['link'];
             if (linkHeader) {
-               const matches = linkHeader.match(/page=([0-9]+)&pageSize=10>; rel="last"/);
-               if (matches && matches[1]) {
-                  setTotalPages(parseInt(matches[1], 10));
+               const lastPageMatch = linkHeader.match(/<https:\/\/www\.anapioficeandfire\.com\/api\/houses\?page=(\d+)&pageSize=(\d+)>; rel="last"/);
+               if (lastPageMatch) {
+                  const lastPageNumber = parseInt(lastPageMatch[1], 10);
+                  const pageSize = parseInt(lastPageMatch[2], 10);
+                  console.log('lastPageNumber:', lastPageNumber);
+                  console.log('pageSize:', pageSize);
+                  console.log('rowsPerPage:', rowsPerPage);
+                  if (rowsPerPage === pageSize) {
+                     setTotalPages(lastPageNumber);
+                  }
+               } else {
+                  console.log('No last page found in link header:', linkHeader);
                }
+            } else {
+               console.log('No link header in response');
             }
-         })
-         .catch(err => {
+         } catch (err) {
+            console.error('Error fetching houses:', err);
             setError("Error fetching houses, please try again later.")
-         });
-   }, [page, filterName, filterRegion]);
+         }
+      };
+
+      fetchHouses();
+   }, [page, filterName, filterRegion, rowsPerPage]);
+
 
    useEffect(() => {
       if (selectedHouse) {
@@ -136,54 +164,57 @@ const Houses: FC<any> = () => {
       }
    }, [selectedHouse]);
 
+   useEffect(() => {
+      setPage(1);
+   }, [rowsPerPage]);
+
+
    if (error) return <p>{error}</p>;
+
+   const count = Math.ceil(totalPages * rowsPerPage);
 
    return (
       <>
-         <Box sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-            <Grid container spacing={2}>
-               <Grid item xs={12} sm={6}>
-                  <TextField id="name" label="Name" variant="outlined" value={filterName} onChange={handleFilterNameChange} fullWidth />
-               </Grid>
-               <Grid item xs={12} sm={6}>
-                  <TextField label="Region" variant="outlined" value={filterRegion} onChange={handleFilterRegionChange} fullWidth />
-               </Grid>
-               <Grid item xs={12}>
-                  <Button variant="contained" color="primary" onClick={resetFilters}>Reset Filters</Button>
-               </Grid>
-            </Grid>
-         </Box>
+         <FilterBox
+            filters={[
+               {
+                  filterValue: filterName,
+                  handler: handleFilterNameChange,
+                  filterKey: "Name",
+               },
+               {
+                  filterValue: filterRegion,
+                  handler: handleFilterRegionChange,
+                  filterKey: "Region",
+               },
+            ]}
+            resetFilters={resetFilters}
+         />
          <Box sx={{ display: 'flex', p: 2 }}>
-            <TableContainer component={Paper} sx={{ width: '50%', marginRight: '20px' }}>
-               <Table>
-                  <TableHead>
-                     <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Region</TableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {houses.length > 0 ? (
-                        houses.map((house, index) => (
-                           <TableRow key={index} onClick={() => setSelectedHouse(house)} style={{ cursor: 'pointer' }}>
-                              <TableCell>{house.name}</TableCell>
-                              <TableCell>{house.region}</TableCell>
-                           </TableRow>
-                        ))
-                     ) : (
-                        <TableRow>
-                           <TableCell colSpan={2} align="center">
-                              No results found
-                           </TableCell>
-                        </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-               <Pagination count={totalPages} page={page} onChange={(event, value) => setPage(value)} />
-            </TableContainer>
+            <MainTable
+               columns={[
+                  {
+                     displayName: 'Name',
+                     attributeKey: 'name'
+                  },
+                  {
+                     displayName: 'Region',
+                     attributeKey: 'region'
+                  }
+               ]}
+               items={houses}
+               onClickHandler={setSelectedHouse}
+               pagination={{
+                  totalPages,
+                  rowsPerPage,
+                  page,
+                  setPage,
+                  setRowsPerPage
+               }
+               }
+            />
             {isLoadingSelectedHouse ? (
                <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-                  {/* Skeleton Card Content */}
                   <CardContent>
                      <Skeleton variant="text" height={30} />
                      <Grid container spacing={2}>

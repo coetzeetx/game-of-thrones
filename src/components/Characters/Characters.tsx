@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Book } from '../Books/Books';
 import { styled } from '@mui/system';
+import FilterBox from '../shared/FilterBox/FilterBox';
+import MainTable from '../shared/MainTable/MainTable';
 
 
 interface Character {
@@ -60,6 +62,7 @@ const Characters: FC = () => {
    const [isAlive, setIsAlive] = useState("");
    const [name, setName] = useState("");
    const [books, setBooks] = useState<Book[]>([]);
+   const [rowsPerPage, setRowsPerPage] = useState(10);
 
 
    useEffect(() => {
@@ -136,48 +139,56 @@ const Characters: FC = () => {
 
    return (
       <>
-         <Box sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-            <Grid container spacing={2}>
-               <Grid item xs={12} sm={6}>
-                  <TextField id="name" label="Name" variant="outlined" value={name} onChange={handleNameChange} />
-               </Grid>
-               <Grid item xs={12} sm={6}>
-                  <TextField label="Gender" variant="outlined" value={gender} onChange={handleGenderChange} fullWidth />
-               </Grid>
-               <Grid item xs={12}>
-                  <Button variant="contained" color="primary" onClick={resetFilters}>Reset Filters</Button>
-               </Grid>
-            </Grid>
-         </Box>
+         <FilterBox
+            filters={[
+               {
+                  filterKey: 'Name',
+                  filterValue: name,
+                  handler: handleNameChange
+               },
+               {
+                  filterKey: 'Gender',
+                  filterValue: gender,
+                  handler: handleGenderChange
+               }
+            ]}
+            resetFilters={resetFilters}
+         />
          <Box sx={{ display: 'flex', p: 2 }}>
-            <Box sx={{ width: '50%', marginRight: '20px' }}>
-
-               <TableContainer component={Paper}>
-                  <Table>
-                     <TableHead>
-                        <TableRow>
-                           <TableCell>Name</TableCell>
-                           <TableCell>Gender</TableCell>
-                           <TableCell>Culture</TableCell>
-                           <TableCell>Born</TableCell>
-                           <TableCell>Died</TableCell>
-                        </TableRow>
-                     </TableHead>
-                     <TableBody>
-                        {characters.map((character) => (
-                           <TableRow key={character.url} onClick={() => setSelectedCharacter(character)}>
-                              <TableCell>{character.name || character.aliases[0] || 'Unknown Character'}</TableCell>
-                              <TableCell>{character.gender}</TableCell>
-                              <TableCell>{character.culture}</TableCell>
-                              <TableCell>{character.born}</TableCell>
-                              <TableCell>{character.died}</TableCell>
-                           </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
-                  <Pagination count={totalPages} page={page} onChange={handlePageChange} />
-               </TableContainer>
-            </Box>
+         <MainTable
+               columns={[
+                  {
+                     displayName: 'Name',
+                     attributeKey: 'name'
+                  },
+                  {
+                     displayName: 'Gender',
+                     attributeKey: 'gender'
+                  },
+                  {
+                     displayName: 'Culture',
+                     attributeKey: 'culture'
+                  },
+                  {
+                     displayName: 'Born',
+                     attributeKey: 'born'
+                  },
+                  {
+                     displayName: 'Died',
+                     attributeKey: 'died'
+                  }
+               ]}
+               items={characters}
+               onClickHandler={setSelectedCharacter}
+               pagination={{
+                  totalPages,
+                  rowsPerPage,
+                  page,
+                  setPage,
+                  setRowsPerPage
+               }
+               }
+            />
             {selectedCharacter && (
                <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
                   <CardContent>

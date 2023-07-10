@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, TextField, Grid, Button, Skeleton } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/system';
+import FilterBox from '../shared/FilterBox/FilterBox';
+import MainTable from '../shared/MainTable/MainTable';
 
 export interface Book {
    id: number;
@@ -46,6 +48,7 @@ const Books: FC<any> = () => {
    const navigate = useNavigate();
    const [characterIndex, setCharacterIndex] = useState(50);
    const [isLoading, setIsLoading] = useState(false);
+   const [rowsPerPage, setRowsPerPage] = useState(10);
 
    useEffect(() => {
       if (id) {
@@ -149,45 +152,43 @@ const Books: FC<any> = () => {
 
    return (
       <>
-         <Box sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-            <Grid container spacing={2}>
-               <Grid item xs={12} sm={6}>
-                  <TextField id="name" label="Name" variant="outlined" value={name} onChange={handleNameChange} />
-               </Grid>
-               <Grid item xs={12}>
-                  <Button variant="contained" color="primary" onClick={resetFilters}>Reset Filters</Button>
-               </Grid>
-            </Grid>
-         </Box>
+         <FilterBox
+            filters={[
+               {
+                  filterKey: 'Name',
+                  filterValue: name,
+                  handler: handleNameChange
+               }
+            ]}
+            resetFilters={resetFilters}
+         />
          <Box sx={{ display: 'flex', p: 2 }}>
-            <TableContainer component={Paper} sx={{ width: '50%', marginRight: '20px' }}>
-               <Table>
-                  <TableHead>
-                     <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Author(s)</TableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {books.length > 0 ? (
-                        books.map((book, index) => (
-                           <TableRow key={index} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer' }}>
-                              <TableCell>{book.name}</TableCell>
-                              <TableCell>{book.authors.join(', ')}</TableCell>
-                           </TableRow>
-                        ))) : (
-                        <TableRow>
-                           <TableCell colSpan={2} align="center">
-                              No results found
-                           </TableCell>
-                        </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-               <Pagination count={totalPages} page={page} onChange={handlePageChange} />
-            </TableContainer>
-            <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
-               {isLoading ? (
+            <MainTable
+               columns={[
+                  {
+                     displayName: 'Name',
+                     attributeKey: 'name'
+                  },
+                  {
+                     displayName: 'Author(s)',
+                     attributeKey: 'authors',
+                     isList: true
+                  },
+               ]}
+               items={books}
+               onClickHandler={setSelectedBook}
+               pagination={{
+                  totalPages,
+                  rowsPerPage,
+                  page,
+                  setPage,
+                  setRowsPerPage
+               }
+               }
+            />
+
+            {isLoading ? (
+               <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
                   <CardContent>
                      <Skeleton variant="text" height={30} />
                      <Grid container spacing={2}>
@@ -205,7 +206,9 @@ const Books: FC<any> = () => {
                      <Skeleton variant="text" />
                      <Skeleton variant="text" />
                   </CardContent>
-               ) : selectedBook ? (
+               </Card>
+            ) : selectedBook ? (
+               <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
                   <CardContent>
                      <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
                         {selectedBook.name}
@@ -240,8 +243,9 @@ const Books: FC<any> = () => {
                         <Button style={{ marginTop: '10px' }} variant="outlined" onClick={loadMoreCharacters}>Load More Characters</Button>
                      )}
                   </CardContent>
-               ) : null}
-            </Card>
+               </Card>
+            ) : null}
+
 
          </Box>
       </>
