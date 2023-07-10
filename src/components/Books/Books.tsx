@@ -49,22 +49,37 @@ const Books: FC<any> = () => {
 
    useEffect(() => {
       if (id) {
+         const CancelToken = axios.CancelToken;
+         const source = CancelToken.source();
+
          // Fetch the book by its ID
-         axios.get(`https://www.anapioficeandfire.com/api/books/${id}`)
+         axios.get(`https://www.anapioficeandfire.com/api/books/${id}`, { cancelToken: source.token })
             .then(response => {
-               setName(response.data.name)
+               setName(response.data.name);
                setSelectedBook(response.data);
             })
             .catch(error => {
-               console.error("Error fetching book: ", error);
+               if (axios.isCancel(error)) {
+                  console.log("Request canceled", error.message);
+               } else {
+                  console.error("Error fetching book: ", error);
+               }
             });
+
+         // Cleanup function to cancel the request
+         return () => {
+            source.cancel("Operation canceled by the user.");
+         }
       }
    }, [id]);
 
    useEffect(() => {
-      let url = `https://www.anapioficeandfire.com/api/books?name=${name}&page=${page}&pageSize=10`
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
 
-      axios.get(url)
+      let url = `https://www.anapioficeandfire.com/api/books?name=${name}&page=${page}&pageSize=10`;
+
+      axios.get(url, { cancelToken: source.token })
          .then(response => {
             const linkHeader = response.headers.link;
             if (linkHeader) {
@@ -76,7 +91,18 @@ const Books: FC<any> = () => {
                }
             }
             setBooks(response.data);
+         })
+         .catch(error => {
+            if (axios.isCancel(error)) {
+               console.log("Request canceled", error.message);
+            } else {
+               console.error("Error fetching books: ", error);
+            }
          });
+
+      return () => {
+         source.cancel("Operation canceled by the user.");
+      }
    }, [page, name]);
 
    useEffect(() => {
@@ -143,12 +169,19 @@ const Books: FC<any> = () => {
                      </TableRow>
                   </TableHead>
                   <TableBody>
-                     {books.map((book, index) => (
-                        <TableRow key={index} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer' }}>
-                           <TableCell>{book.name}</TableCell>
-                           <TableCell>{book.authors.join(', ')}</TableCell>
+                     {books.length > 0 ? (
+                        books.map((book, index) => (
+                           <TableRow key={index} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer' }}>
+                              <TableCell>{book.name}</TableCell>
+                              <TableCell>{book.authors.join(', ')}</TableCell>
+                           </TableRow>
+                        ))) : (
+                        <TableRow>
+                           <TableCell colSpan={2} align="center">
+                              No results found
+                           </TableCell>
                         </TableRow>
-                     ))}
+                     )}
                   </TableBody>
                </Table>
                <Pagination count={totalPages} page={page} onChange={handlePageChange} />
