@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import FilterBox from '../shared/FilterBox/FilterBox';
 import MainTable from '../shared/MainTable/MainTable';
@@ -36,7 +36,7 @@ const makeRequest = async (url: any, cancelToken: any) => {
    };
 };
 
-const useBooks = (name: any, page: any) => {
+const useBooks = (name: any, page: any, rowsPerPage: any) => {
    const [books, setBooks] = useState<Book[]>([]);
    const [totalPages, setTotalPages] = useState(1);
 
@@ -44,7 +44,7 @@ const useBooks = (name: any, page: any) => {
       const CancelToken = axios.CancelToken;
       const source = CancelToken.source();
 
-      let url = `${API_BASE_URL}/books?name=${name}&page=${page}&pageSize=10`;
+      let url = `${API_BASE_URL}/books?name=${name}&page=${page}&pageSize=${rowsPerPage}`;
 
       makeRequest(url, source.token)
          .then(response => {
@@ -65,7 +65,7 @@ const useBooks = (name: any, page: any) => {
       return () => {
          source.cancel("Operation canceled by the user.");
       }
-   }, [page, name]);
+   }, [page, name, rowsPerPage]);
 
    return { books, totalPages, setBooks };
 };
@@ -108,7 +108,7 @@ const Books: FC<any> = () => {
    const navigate = useNavigate();
    const [characterIndex, setCharacterIndex] = useState(50);
    const [rowsPerPage, setRowsPerPage] = useState(10);
-   const {books, totalPages} = useBooks(name, page);
+   const { books, totalPages } = useBooks(name, page, rowsPerPage);
    const { characters, isLoading } = useCharacters(selectedBook, characterIndex);
 
    useEffect(() => {
@@ -153,6 +153,7 @@ const Books: FC<any> = () => {
    return (
       <>
          <FilterBox
+            data-testid="filter-box"
             filters={[
                {
                   filterKey: 'Name',
@@ -163,7 +164,9 @@ const Books: FC<any> = () => {
             resetFilters={resetFilters}
          />
          <Box sx={{ display: 'flex', p: 2 }}>
+
             <MainTable
+               data-testid="main-table"
                columns={[
                   {
                      displayName: 'Name',
@@ -187,6 +190,7 @@ const Books: FC<any> = () => {
                }
             />
             <BooksDetails
+               data-testid="books-details"
                characterIndex={characterIndex}
                characters={characters}
                isLoading={isLoading}

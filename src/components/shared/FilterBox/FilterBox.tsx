@@ -11,14 +11,19 @@ interface Filter {
 interface FilterBoxProps {
    filters: Filter[];
    resetFilters: () => void;
+   'data-testid'?: string;
 }
 
 const FilterBox: React.FC<FilterBoxProps> = ({
    filters,
-   resetFilters
+   resetFilters,
+   'data-testid': testId
 }) => {
    return (
-      <Box sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+      <Box 
+      sx={{ width: '500px', margin: '20px 20px', padding: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}
+      data-testid={testId}
+      >
          <Grid container spacing={2}>
             {filters.map((filter, index) => (
                <Grid item xs={12} sm={6} key={index}>

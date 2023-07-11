@@ -21,9 +21,10 @@ interface MainTableProps {
    columns: Column[];
    onClickHandler: (item: any) => void;
    pagination: Pagination;
+   'data-testid'?: string;
 }
 
-const MainTable: FC<MainTableProps> = ({ items, columns, onClickHandler, pagination }) => {
+const MainTable: FC<MainTableProps> = ({ items, columns, onClickHandler, pagination, 'data-testid': testId }) => {
 
    const handleChangePage = (
       event: React.MouseEvent<HTMLButtonElement> | null,
@@ -39,12 +40,16 @@ const MainTable: FC<MainTableProps> = ({ items, columns, onClickHandler, paginat
    };
 
    return (
-      <TableContainer component={Paper} sx={{
+      <TableContainer 
+      component={Paper} 
+      sx={{
          width: '50%',
          marginRight: '20px',
          maxHeight: 600,
          overflow: 'auto'
-      }}>
+      }}
+      data-testid={testId}
+      >
          <Table stickyHeader>
             <TableHead>
                <TableRow>

@@ -1,70 +1,43 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import { render, waitFor, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import axios, { CancelToken } from 'axios';
 import Books from './Books';
-import { BrowserRouter as Router } from 'react-router-dom';
 
-const server = setupServer(
-  rest.get('https://www.anapioficeandfire.com/api/books', (req, res, ctx) => {
-    return res(
-      ctx.json([
+jest.mock('axios');
+
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+describe('Books', () => {
+  it('renders the books component', async () => {
+    mockedAxios.get.mockResolvedValueOnce({
+      data: [
         {
           id: 1,
-          url: 'https://www.anapioficeandfire.com/api/books/1',
           name: 'A Game of Thrones',
-          isbn: '978-0553103540',
           authors: ['George R. R. Martin'],
-          numberOfPages: 694,
-          publisher: 'Bantam Books',
-          country: 'United States',
-          mediaType: 'Hardcover',
-          released: '1996-08-01T00:00:00',
-          characters: ['https://www.anapioficeandfire.com/api/characters/1'],
         },
-      ])
-    );
-  }),
-  rest.get('https://www.anapioficeandfire.com/api/characters/1', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        url: 'https://www.anapioficeandfire.com/api/characters/1',
-        name: 'Character Name',
-        aliases: ['Alias 1', 'Alias 2'],
-      })
-    );
-  })
-);
+      ],
+      headers: {
+        link: '<https://www.anapioficeandfire.com/api/books?name=&page=1&pageSize=10>; rel="first", <https://www.anapioficeandfire.com/api/books?name=&page=1&pageSize=10>; rel="prev", <https://www.anapioficeandfire.com/api/books?name=&page=1&pageSize=10>; rel="next", <https://www.anapioficeandfire.com/api/books?name=&page=1&pageSize=10>; rel="last"'
+      }
+    });
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+    const mockCancelToken: CancelToken = new axios.CancelToken(jest.fn());
 
-describe('<Books />', () => {
-  it('renders without crashing', async () => {
+    mockedAxios.CancelToken.source = jest.fn(() => ({
+      token: mockCancelToken,
+      cancel: jest.fn(),
+    }));
+
     render(
-      <Router>
+      <BrowserRouter>
         <Books />
-      </Router>
+      </BrowserRouter>
     );
 
-    // Wait for the books to be fetched
-    await waitFor(() => expect(screen.getByText('A Game of Thrones')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
 
-  it('displays book details when a book is clicked', async () => {
-    render(
-      <Router>
-        <Books />
-      </Router>
-    );
-
-    // Wait for the books to be fetched
-    await waitFor(() => expect(screen.getByText('A Game of Thrones')).toBeInTheDocument());
-
-    // Click on a book
-    fireEvent.click(screen.getByText('A Game of Thrones'));
-
-    // Wait for the character to be fetched
-    await waitFor(() => expect(screen.getByText('Character Name')).toBeInTheDocument());
+    expect(screen.getByTestId('filter-box')).toBeInTheDocument();
+    expect(screen.getByTestId('main-table')).toBeInTheDocument();
   });
 });

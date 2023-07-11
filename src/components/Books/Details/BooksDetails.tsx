@@ -35,7 +35,7 @@ const BooksDetails: FC<BooksDetailsProps> = ({selectedBook, characters, characte
    return (
       <>
       {isLoading ? (
-      <Card sx = {{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }} >
+      <Card data-testid="loading-card" sx = {{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }} >
       <CardContent>
          <Skeleton variant="text" height={30} />
          <Grid container spacing={2}>
@@ -55,7 +55,7 @@ const BooksDetails: FC<BooksDetailsProps> = ({selectedBook, characters, characte
       </CardContent>
       </Card >
       ) : selectedBook ? (
-   <Card sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
+   <Card data-testid="book-details-card" sx={{ width: '50%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3 }}>
       <CardContent>
          <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
             {selectedBook.name}
@@ -87,7 +87,7 @@ const BooksDetails: FC<BooksDetailsProps> = ({selectedBook, characters, characte
 
          )}
          {selectedBook && characterIndex < selectedBook.characters.length && (
-            <Button style={{ marginTop: '10px' }} variant="outlined" onClick={loadMoreCharacters}>Load More Characters</Button>
+            <Button data-testid="load-more-button" style={{ marginTop: '10px' }} variant="outlined" onClick={loadMoreCharacters}>Load More Characters</Button>
          )}
       </CardContent>
    </Card>
