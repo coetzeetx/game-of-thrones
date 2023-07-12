@@ -1,10 +1,7 @@
 import React, { FC, useEffect, useState, ChangeEvent } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination } from '@mui/material';
-import { Card, CardContent, Typography, Grid, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
-import { Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { Book } from '../Books/Books';
 
 import FilterBox from '../shared/FilterBox/FilterBox';
@@ -123,6 +120,7 @@ const Characters: FC = () => {
    return (
       <>
          <FilterBox
+            data-testid="filter-box"
             filters={[
                {
                   filterKey: 'Name',
@@ -138,7 +136,8 @@ const Characters: FC = () => {
             resetFilters={resetFilters}
          />
          <Box sx={{ display: 'flex', p: 2 }}>
-         <MainTable
+            <MainTable
+               data-testid="main-table"
                columns={[
                   {
                      displayName: 'Name',
@@ -172,9 +171,9 @@ const Characters: FC = () => {
                }
                }
             />
-            <CharactersDetails 
-            books={books}
-            selectedCharacter={selectedCharacter}
+            <CharactersDetails
+               books={books}
+               selectedCharacter={selectedCharacter}
             />
          </Box>
       </>
