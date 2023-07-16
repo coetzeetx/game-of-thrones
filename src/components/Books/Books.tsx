@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import FilterBox from '../shared/FilterBox/FilterBox';
 import MainTable from '../shared/MainTable/MainTable';
 import BooksDetails from './Details/BooksDetails';
+import { useLocation } from 'react-router-dom';
 
 const API_BASE_URL = 'https://www.anapioficeandfire.com/api';
 
@@ -101,10 +102,14 @@ const useCharacters = (selectedBook: any, characterIndex: any) => {
 };
 
 const Books: FC<any> = () => {
+   const location = useLocation();
+   const queryParams = new URLSearchParams(location.search);
+   const queryName = queryParams.get('name') || '';
    const [selectedBook, setSelectedBook] = useState<Book | null>(null);
    const [page, setPage] = useState(1);
    const { id } = useParams();
-   const [name, setName] = useState("");
+   console.log(queryName)
+   const [name, setName] = useState(queryName);
    const navigate = useNavigate();
    const [characterIndex, setCharacterIndex] = useState(50);
    const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -152,17 +157,6 @@ const Books: FC<any> = () => {
 
    return (
       <>
-         <FilterBox
-            data-testid="filter-box"
-            filters={[
-               {
-                  filterKey: 'Name',
-                  filterValue: name,
-                  handler: handleNameChange
-               }
-            ]}
-            resetFilters={resetFilters}
-         />
          <Box sx={{ display: 'flex', p: 2 }}>
 
             <MainTable

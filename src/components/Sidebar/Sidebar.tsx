@@ -26,19 +26,19 @@ const Sidebar: FC<SidebarProps> = ({open, handleDrawerToggle}) => {
                </ListItemIcon>
                {open && <ListItemText primary="Map" />}
             </ListItem>
-            <ListItem button component={Link} to="/houses">
+            <ListItem button component={Link} to="/iframe/houses">
                <ListItemIcon sx={{ minWidth: open ? 35 : 'auto'}}>
                   <TokenIcon />
                </ListItemIcon>
                {open && <ListItemText primary="Houses" />}
             </ListItem>
-            <ListItem button component={Link} to="/characters">
+            <ListItem button component={Link} to="/iframe/characters">
                <ListItemIcon sx={{ minWidth: open ? 35 : 'auto'}}>
                   <PeopleIcon />
                </ListItemIcon>
                {open && <ListItemText primary="Characters" />}
             </ListItem>
-            <ListItem button component={Link} to="/books">
+            <ListItem button component={Link} to="/iframe/books">
                <ListItemIcon sx={{ minWidth: open ? 35 : 'auto'}}>
                   <BookIcon />
                </ListItemIcon>

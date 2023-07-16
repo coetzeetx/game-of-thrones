@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Card, CardContent, Typography, TextField, Grid, Skeleton } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
 import FilterBox from '../shared/FilterBox/FilterBox';
 import MainTable from '../shared/MainTable/MainTable';
@@ -43,6 +43,10 @@ const FormTextField = styled(TextField)({
 });
 
 const Houses: FC<any> = () => {
+   const location = useLocation();
+   const queryParams = new URLSearchParams(location.search);
+   const queryName = queryParams.get('name') || '';
+   const queryRegion = queryParams.get('region') || '';
    const [houses, setHouses] = useState<House[]>([]);
    const [selectedHouse, setSelectedHouse] = useState<House | null>(null);
    const [currentLord, setCurrentLord] = useState<string | null>(null);
@@ -52,10 +56,10 @@ const Houses: FC<any> = () => {
    const [rowsPerPage, setRowsPerPage] = useState(10);
 
    const [totalPages, setTotalPages] = useState(1);
-   const [filterName, setFilterName] = useState("");
+   const [filterName, setFilterName] = useState(queryName);
    const [isLoadingSelectedHouse, setIsLoadingSelectedHouse] = useState<boolean>(false);
    const [error, setError] = useState<string | null>(null);
-   const [filterRegion, setFilterRegion] = useState("");
+   const [filterRegion, setFilterRegion] = useState(queryRegion);
 
 
 
@@ -173,21 +177,7 @@ const Houses: FC<any> = () => {
 
    return (
       <>
-         <FilterBox
-            filters={[
-               {
-                  filterValue: filterName,
-                  handler: handleFilterNameChange,
-                  filterKey: "Name",
-               },
-               {
-                  filterValue: filterRegion,
-                  handler: handleFilterRegionChange,
-                  filterKey: "Region",
-               },
-            ]}
-            resetFilters={resetFilters}
-         />
+
          <Box sx={{ display: 'flex', p: 2 }}>
             <MainTable
                columns={[

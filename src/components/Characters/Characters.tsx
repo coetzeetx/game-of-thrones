@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState, ChangeEvent } from 'react';
 import axios from 'axios';
 import { Box } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Book } from '../Books/Books';
 
 import FilterBox from '../shared/FilterBox/FilterBox';
@@ -29,6 +29,10 @@ interface Character {
 }
 
 const Characters: FC = () => {
+   const location = useLocation();
+   const queryParams = new URLSearchParams(location.search);
+   const queryName = queryParams.get('name') || '';
+   const queryGender = queryParams.get('gender') || '';
    const [characters, setCharacters] = useState<Character[]>([]);
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
@@ -36,12 +40,12 @@ const Characters: FC = () => {
    const navigate = useNavigate();
    const { id } = useParams();
    const [totalPages, setTotalPages] = useState(1);
-   const [gender, setGender] = useState("");
+   const [gender, setGender] = useState(queryGender);
    const [culture, setCulture] = useState("");
    const [born, setBorn] = useState("");
    const [died, setDied] = useState("");
    const [isAlive, setIsAlive] = useState("");
-   const [name, setName] = useState("");
+   const [name, setName] = useState(queryName);
    const [books, setBooks] = useState<Book[]>([]);
    const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -119,22 +123,6 @@ const Characters: FC = () => {
 
    return (
       <>
-         <FilterBox
-            data-testid="filter-box"
-            filters={[
-               {
-                  filterKey: 'Name',
-                  filterValue: name,
-                  handler: handleNameChange
-               },
-               {
-                  filterKey: 'Gender',
-                  filterValue: gender,
-                  handler: handleGenderChange
-               }
-            ]}
-            resetFilters={resetFilters}
-         />
          <Box sx={{ display: 'flex', p: 2 }}>
             <MainTable
                data-testid="main-table"

@@ -21,7 +21,7 @@ describe('<FilterBox />', () => {
   const resetFilters = jest.fn();
 
   test('it should mount', () => {
-    render(<FilterBox filters={filters} resetFilters={resetFilters} />);
+    // render(<FilterBox filters={filters} resetFilters={resetFilters} />);
     expect(screen.getByLabelText('Test1')).toBeInTheDocument();
     expect(screen.getByLabelText('Test2')).toBeInTheDocument();
   });
@@ -32,7 +32,7 @@ describe('<FilterBox />', () => {
       { filterKey: 'Test1', filterValue: '', handler: mockHandler },
       { filterKey: 'Test2', filterValue: '', handler: jest.fn() }
     ];
-    render(<FilterBox filters={testFilters} resetFilters={resetFilters} />);
+    // render(<FilterBox filters={testFilters} resetFilters={resetFilters} />);
     userEvent.type(screen.getByLabelText('Test1'), 'abc');
     expect(mockHandler).toHaveBeenCalled();
   });
@@ -40,7 +40,7 @@ describe('<FilterBox />', () => {
   
 
   test('resetFilters function gets called', () => {
-    render(<FilterBox filters={filters} resetFilters={resetFilters} />);
+    // render(<FilterBox filters={filters} resetFilters={resetFilters} />);
     fireEvent.click(screen.getByText('Reset Filters'));
     expect(resetFilters).toHaveBeenCalledTimes(1);
   });
